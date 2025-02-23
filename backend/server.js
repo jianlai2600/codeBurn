@@ -28,5 +28,5 @@ app.use("/api/hasTag", hasTagRoutes);
 // 监听 6000 端口
 const PORT = 6000;
 app.listen(PORT, () => {
-    console.log(`✅ 服务器运行在 http://localhost:${PORT}`);
+    console.log(`🔥 Server running on port ${PORT}`);
 });

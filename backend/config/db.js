@@ -1,6 +1,6 @@
 const mysql = require('mysql2');
 
-const connection = mysql.createConnection({
+const db = mysql.createConnection({
     host: 'localhost',
     user: 'root',
     password: '1991Lyf@@@',  // 你的 MySQL 密码
@@ -8,7 +8,7 @@ const connection = mysql.createConnection({
     multipleStatements: true
 });
 
-connection.connect(err => {
+db.connect(err => {
     if (err) {
         console.error('❌ MySQL 连接失败:', err);
         process.exit(1);
