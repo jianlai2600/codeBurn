@@ -11,12 +11,15 @@ function Home() {
                     Your ultimate LeetCode progress tracker & coding hub!
                 </p>
                 <div className="flex justify-center space-x-6 mt-6">
-                    <button className="bg-black hover:bg-gray-800 text-white px-6 py-3 rounded-lg text-lg shadow-md transition-all">
-                        Get Started 🚀
-                    </button>
-                    <button className="bg-black hover:bg-gray-800 text-white px-6 py-3 rounded-lg text-lg shadow-md transition-all">
-                        Visit LeetCode 🌍
-                    </button>
+                <a href="/Users" target="_blank" rel="noopener noreferrer" 
+                className="bg-white text-black px-6 py-3 rounded-lg text-lg shadow-md transition-all hover:bg-gray-200 hover:text-white">
+                    Get Started 🚀
+                </a>
+
+                <a href="https://www.leetcode.com" target="_blank" rel="noopener noreferrer" 
+                className="bg-white text-black px-6 py-3 rounded-lg text-lg shadow-md transition-all hover:bg-gray-200 hover:text-white">
+                    Visit LeetCode 🌍
+                </a>
                 </div>
                 <p className="text-sm opacity-90 mt-6">
                     ⚡ CodeBurn | LeetCode Tracker | 2024

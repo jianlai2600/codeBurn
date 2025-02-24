@@ -9,10 +9,10 @@ function Header() {
                     🚀 <span className="text-yellow-500">CodeBurn</span>
                 </h1>
                 <div className="flex space-x-8">
-                    <Link to="/" className="text-gray-800 hover:text-yellow-500 transition-all">Home</Link>
-                    <Link to="/users" className="text-gray-800 hover:text-yellow-500 transition-all">Users</Link>
-                    <Link to="/problems" className="text-gray-800 hover:text-yellow-500 transition-all">Problems</Link>
-                    <Link to="/solves" className="text-gray-800 hover:text-yellow-500 transition-all">Solves</Link>
+                    <Link to="/" className="px-4 py-2 text-lg font-medium text-gray-300 hover:text-white hover:bg-gray-200 rounded-lg transition-all">Home</Link>
+                    <Link to="/users" className="px-4 py-2 text-lg font-medium text-gray-300 hover:text-white hover:bg-gray-200 rounded-lg transition-all">Users</Link>
+                    <Link to="/problems" className="px-4 py-2 text-lg font-medium text-gray-300 hover:text-white hover:bg-gray-200 rounded-lg transition-all">Problems</Link>
+                    <Link to="/solves" className="px-4 py-2 text-lg font-medium text-gray-300 hover:text-white hover:bg-gray-200 rounded-lg transition-all">Solves</Link>
                 </div>
             </nav>
         </div>

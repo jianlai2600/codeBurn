@@ -25,8 +25,8 @@ app.use("/api/solves", solvesRoutes);
 app.use("/api/appearsIn", appearsInRoutes);
 app.use("/api/hasTag", hasTagRoutes);
 
-// 监听 6000 端口
-const PORT = 6000;
+// 监听 1234 端口
+const PORT = 1234;
 app.listen(PORT, () => {
     console.log(`🔥 Server running on port ${PORT}`);
 });

@@ -7,14 +7,14 @@ function Solves() {
 
     // 🔹 查询所有刷题记录
     useEffect(() => {
-        axios.get("http://localhost:6000/api/solves")
+        axios.get("http://localhost:1234/api/solves")
             .then(res => setSolves(res.data))
             .catch(err => console.error(err));
     }, []);
 
     // 🔹 新增刷题记录
     const addSolve = () => {
-        axios.post("http://localhost:6000/api/solves", newSolve)
+        axios.post("http://localhost:1234/api/solves", newSolve)
             .then(() => {
                 alert("新增刷题记录成功！");
                 window.location.reload();
@@ -24,7 +24,7 @@ function Solves() {
 
     // 🔹 删除刷题记录
     const deleteSolve = (id) => {
-        axios.delete(`http://localhost:6000/api/solves/${id}`)
+        axios.delete(`http://localhost:1234/api/solves/${id}`)
             .then(() => {
                 alert("删除成功！");
                 setSolves(solves.filter(s => s.solve_id !== id));
