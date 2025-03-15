@@ -14,8 +14,10 @@ const discussionsRoutes = require("./routes/discussionsRoutes");
 const solvesRoutes = require("./routes/solvesRoutes");
 const appearsInRoutes = require("./routes/appearsInRoutes");
 const hasTagRoutes = require("./routes/hasTagRoutes");
+const statsRoutes = require("./routes/statsRoutes");
 
 // 使用路由
+app.use("/api/stats", statsRoutes);
 app.use("/api/users", usersRoutes);
 app.use("/api/problems", problemsRoutes);
 app.use("/api/companies", companiesRoutes);

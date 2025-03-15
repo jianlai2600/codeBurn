@@ -11,7 +11,7 @@ function Home() {
                     Your ultimate LeetCode progress tracker & coding hub!
                 </p>
                 <div className="flex justify-center space-x-6 mt-6">
-                <a href="/Users" target="_blank" rel="noopener noreferrer" 
+                <a href="/Stats" target="_blank" rel="noopener noreferrer" 
                 className="bg-white text-black px-6 py-3 rounded-lg text-lg shadow-md transition-all hover:bg-gray-200 hover:text-white">
                     Get Started 🚀
                 </a>

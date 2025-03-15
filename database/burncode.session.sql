@@ -1,5 +1,2 @@
-SELECT 
-    u.username
-FROM User u
-WHERE 
-    u.username = 'jojo';
+SELECT * FROM User
+WHERE username = 'shaffernicole';
