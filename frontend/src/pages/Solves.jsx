@@ -149,26 +149,41 @@ const searchSolvesByProblemId = () => {
         });
 };
     
-        // 添加解题记录
-        const addSolve = () => {
-            if (!newSolve.user_id || !newSolve.problem_id || !newSolve.solve_date || !newSolve.attempts || !newSolve.status) {
-                alert("All fields are required!");
-                return;
-            }
-            axios.post("http://localhost:1234/api/solves", newSolve)
-                .then(() => {
-                    fetchSolves();
-                    setNewSolve({ user_id: "", problem_id: "", solve_date: "", attempts: "", status: "" });
-                })
-                .catch(err => {
-                    if (err.response && err.response.status === 400) {
-                        alert(err.response.data.error);
+    // 添加解题记录
+    const addSolve = () => {
+        console.log("📤 newSolve:", newSolve);
+    
+        if (
+            !newSolve.user_id.trim() || 
+            !newSolve.problem_id.trim() || 
+            !newSolve.solve_date.trim() || 
+            !parseInt(newSolve.attempts, 10) ||  
+            !newSolve.status.trim()
+        ) {
+            alert("⚠️ All fields are required!");
+            return;
+        }
+    
+        axios.post("http://localhost:1234/api/solves", newSolve)
+            .then(() => {
+                fetchSolves();
+                setNewSolve({ user_id: "", problem_id: "", solve_date: "", attempts: "", status: "" });
+            })
+            .catch(err => {
+                if (err.response) {
+                    console.error("❌ Error response:", err.response);
+    
+                    if (err.response.status === 400) {
+                        alert(`🚨 ${err.response.data.error}`);  // 直接 alert 后端错误信息
                     } else {
-                        console.error(err);
-                        alert("An error occurred while adding the solve record.");
+                        alert("⚠️ An error occurred while adding the solve record.");
                     }
-                });
-        };
+                } else {
+                    console.error("❌ Network or unknown error:", err);
+                    alert("⚠️ Network error, please try again later.");
+                }
+            });
+    };
     
         // 删除解题记录
         const deleteSolve = (id) => {
@@ -176,15 +191,29 @@ const searchSolvesByProblemId = () => {
                 .then(() => fetchSolves())
                 .catch(err => console.error(err));
         };
-    
+        const formatDateForMySQL = (isoDate) => {
+            if (!isoDate) return null;
+            return isoDate.split("T")[0]; // 只取 "YYYY-MM-DD"
+        };
         // 更新解题记录
         const updateSolve = () => {
-            axios.put(`http://localhost:1234/api/solves/${selectedSolve.solve_id}`, selectedSolve)
-                .then(() => {
-                    fetchSolves();  // 刷新解题记录列表
-                    setIsModalOpen(false);  // 关闭弹窗
-                })
-                .catch(err => console.error(err));
+            if (!selectedSolve || !selectedSolve.solve_id) {
+                alert("Invalid solve record selected!");
+                return;
+            }
+        
+            // 确保 `solve_date` 是 `YYYY-MM-DD` 格式
+            const formattedDate = formatDateForMySQL(selectedSolve.solve_date);
+        
+            axios.put(`http://localhost:1234/api/solves/${selectedSolve.solve_id}`, {
+                ...selectedSolve,
+                solve_date: formattedDate // 传递 MySQL 兼容格式
+            })
+            .then(() => {
+                fetchSolves();  // 重新加载数据
+                setIsModalOpen(false);  // 关闭弹窗
+            })
+            .catch(err => console.error(err));
         };
     
         const openEditModal = (solve) => {
@@ -199,44 +228,50 @@ const searchSolvesByProblemId = () => {
                 {/* 添加解题记录表单 */}
                 <div className="mt-6 w-full max-w-md">
                     <h2 className="text-xl font-semibold">➕ Add New Solve</h2>
+                    
                     <input 
-                        placeholder="User ID" 
-                        value={newSolve.user_id} 
-                        onChange={e => setNewSolve({ ...newSolve, user_id: e.target.value })} 
-                        className="border border-gray-300 p-3 w-full rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all duration-200"
+                        type="text" 
+                        value={newSolve.user_id}  // ✅ 这里改成 newSolve
+                        onChange={(e) => setNewSolve(prev => ({ ...prev, user_id: e.target.value }))} 
+                        className="border p-2 w-full mb-2 rounded-lg"
+                        placeholder="User ID"
                     />
+                    
                     <input 
-                        placeholder="Problem ID" 
-                        value={newSolve.problem_id} 
-                        onChange={e => setNewSolve({ ...newSolve, problem_id: e.target.value })} 
-                        className="border border-gray-300 p-3 w-full rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all duration-200 mt-2"
+                        type="text" 
+                        value={newSolve.problem_id}  // ✅ 这里改成 newSolve
+                        onChange={(e) => setNewSolve(prev => ({ ...prev, problem_id: e.target.value }))} 
+                        className="border p-2 w-full mb-2 rounded-lg"
+                        placeholder="Problem ID"
                     />
+                    
                     <input 
-                        type="date"
-                        placeholder="Solve Date" 
-                        value={newSolve.solve_date} 
-                        onChange={e => setNewSolve({ ...newSolve, solve_date: e.target.value })} 
-                        className="border border-gray-300 p-3 w-full rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all duration-200 mt-2"
+                        type="date" 
+                        value={newSolve.solve_date}  // ✅ 这里改成 newSolve
+                        onChange={(e) => setNewSolve(prev => ({ ...prev, solve_date: e.target.value }))} 
+                        className="border p-2 w-full mb-2 rounded-lg"
+                        placeholder="Solve Date"
                     />
+                    
                     <input 
-                        type="number"
-                        placeholder="Attempts" 
-                        value={newSolve.attempts} 
-                        onChange={e => setNewSolve({ ...newSolve, attempts: e.target.value })} 
-                        className="border border-gray-300 p-3 w-full rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all duration-200 mt-2"
+                        type="number" 
+                        value={newSolve.attempts}  // ✅ 这里改成 newSolve
+                        onChange={(e) => setNewSolve(prev => ({ ...prev, attempts: e.target.value }))} 
+                        className="border p-2 w-full mb-2 rounded-lg"
+                        placeholder="Attempts"
                     />
+                    
                     <select 
-                        value={newSolve.status} 
-                        onChange={e => setNewSolve({ ...newSolve, status: e.target.value })} 
-                        className="border border-gray-300 p-3 w-full rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all duration-200 mt-2"
+                        value={newSolve.status}  // ✅ 这里改成 newSolve
+                        onChange={(e) => setNewSolve(prev => ({ ...prev, status: e.target.value }))} 
+                        className="border p-2 w-full mb-2 rounded-lg"
                     >
                         <option value="">Select Status</option>
-                        <option value="AC">Accepted</option>
-                        <option value="WA">Wrong Answer</option>
-                        <option value="TLE">Time Limit Exceeded</option>
-                        <option value="MLE">Memory Limit Exceeded</option>
-                        <option value="RE">Runtime Error</option>
+                        <option value="Accepted">Accepted</option>
+                        <option value="Wrong Answer">Wrong Answer</option>
+                        <option value="Time Limit Exceeded">Time Limit Exceeded</option>
                     </select>
+                    
                     <button 
                         onClick={addSolve} 
                         className="mt-2 bg-green-600 text-white px-4 py-2 rounded-lg transition-all duration-200 transform hover:scale-105 active:scale-95 active:bg-green-700"
@@ -377,49 +412,47 @@ const searchSolvesByProblemId = () => {
                 </tbody>
             </table>
             
-            {isModalOpen && (
+            {isModalOpen && selectedSolve && (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
         <div className="bg-white p-6 rounded-lg shadow-lg w-96">
             <h2 className="text-lg font-bold mb-4">Edit Solve Record</h2>
             <input 
                 type="text" 
-                value={selectedSolve.user_id} 
-                onChange={(e) => setSelectedSolve({ ...selectedSolve, user_id: e.target.value })} 
+                value={selectedSolve?.user_id || ""} 
+                onChange={(e) => setSelectedSolve(prev => ({ ...prev, user_id: e.target.value }))} 
                 className="border p-2 w-full mb-2"
                 placeholder="User ID"
             />
             <input 
                 type="text" 
-                value={selectedSolve.problem_id} 
-                onChange={(e) => setSelectedSolve({ ...selectedSolve, problem_id: e.target.value })} 
+                value={selectedSolve?.problem_id || ""}
+                onChange={(e) => setSelectedSolve(prev => ({ ...prev, problem_id: e.target.value }))} 
                 className="border p-2 w-full mb-2"
                 placeholder="Problem ID"
             />
             <input 
                 type="date" 
-                value={selectedSolve.solve_date} 
-                onChange={(e) => setSelectedSolve({ ...selectedSolve, solve_date: e.target.value })} 
+                value={selectedSolve?.solve_date || ""}
+                onChange={(e) => setSelectedSolve(prev => ({ ...prev, solve_date: e.target.value }))} 
                 className="border p-2 w-full mb-2"
                 placeholder="Solve Date"
             />
             <input 
                 type="number" 
-                value={selectedSolve.attempts} 
-                onChange={(e) => setSelectedSolve({ ...selectedSolve, attempts: e.target.value })} 
+                value={selectedSolve?.attempts || ""}
+                onChange={(e) => setSelectedSolve(prev => ({ ...prev, attempts: e.target.value }))} 
                 className="border p-2 w-full mb-2"
                 placeholder="Attempts"
             />
             <select 
-                value={selectedSolve.status} 
-                onChange={(e) => setSelectedSolve({ ...selectedSolve, status: e.target.value })} 
+                value={selectedSolve?.status || ""}
+                onChange={(e) => setSelectedSolve(prev => ({ ...prev, status: e.target.value }))} 
                 className="border p-2 w-full mb-2 rounded-lg"
             >
                 <option value="">Select Status</option>
-                <option value="AC">Accepted</option>
-                <option value="WA">Wrong Answer</option>
-                <option value="TLE">Time Limit Exceeded</option>
-                <option value="MLE">Memory Limit Exceeded</option>
-                <option value="RE">Runtime Error</option>
+                <option value="Accepted">Accepted</option>
+                <option value="Wrong Answer">Wrong Answer</option>
+                <option value="Time Limit Exceeded">Time Limit Exceeded</option>
             </select>
             <div className="flex justify-between">
                 <button 

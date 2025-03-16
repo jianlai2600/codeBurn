@@ -65,21 +65,41 @@ router.post("/", (req, res) => {
     const { user_id, problem_id, solve_date, attempts, status } = req.body;
 
     if (!user_id || !problem_id || !solve_date || !attempts || !status) {
-        console.error("⚠️ Missing required fields");
         return res.status(400).json({ error: "All fields are required!" });
     }
-
-    db.query(
-        "INSERT INTO Solves (user_id, problem_id, solve_date, attempts, status) VALUES (?, ?, ?, ?, ?)",
-        [user_id, problem_id, solve_date, attempts, status],
-        (err, result) => {
-            if (err) {
-                console.error("❌ Error inserting solve:", err);
-                return res.status(500).json({ error: "Database error", details: err });
-            }
-            res.json({ message: "Solve added successfully", solve_id: result.insertId });
+    // 检查 user_id 是否存在
+    db.query("SELECT user_id FROM User WHERE user_id = ?", [user_id], (err, userResult) => {
+        if (err) {
+            console.error("❌ Database error:", err);
+            return res.status(500).json({ error: "Database error" });
         }
-    );
+        if (userResult.length === 0) {
+            return res.status(400).json({ error: `User ID ${user_id} does not exist!` });
+        }
+    // 检查 problem_id 是否存在
+    db.query("SELECT problem_id FROM Problem WHERE problem_id = ?", [problem_id], (err, problemResult) => {
+        if (err) {
+            console.error("❌ Database error:", err);
+            return res.status(500).json({ error: "Database error" });
+        }
+        if (problemResult.length === 0) {
+            return res.status(400).json({ error: `Problem ID ${problem_id} does not exist!` });
+        }
+
+            // 插入 Solve 记录
+            db.query(
+                "INSERT INTO Solves (user_id, problem_id, solve_date, attempts, status) VALUES (?, ?, ?, ?, ?)",
+                [user_id, problem_id, solve_date, attempts, status],
+                (err, result) => {
+                    if (err) {
+                        console.error("❌ Error inserting solve:", err);
+                        return res.status(500).json({ error: "Database error" });
+                    }
+                    res.json({ message: "Solve added successfully", solve_id: result.insertId });
+                }
+            );
+        });
+    });
 });
 
 // 删除解题记录

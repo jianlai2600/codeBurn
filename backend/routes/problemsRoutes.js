@@ -80,4 +80,53 @@ router.put("/:id", (req, res) => {
     );
 });
 
+// 获取某个问题的公司和标签
+router.get("/:id/details", (req, res) => {
+    const { id } = req.params;
+
+    const problemQuery = "SELECT * FROM Problem WHERE problem_id = ?";
+    const companiesQuery = `
+        SELECT Company.company_id, Company.company_name
+        FROM AppearsIn
+        JOIN Company ON AppearsIn.company_id = Company.company_id
+        WHERE AppearsIn.problem_id = ?;
+    `;
+    const tagsQuery = `
+        SELECT Tag.tag_id, Tag.tag_name
+        FROM HasTag
+        JOIN Tag ON HasTag.tag_id = Tag.tag_id
+        WHERE HasTag.problem_id = ?;
+    `;
+
+    db.query(problemQuery, [id], (err, problemResults) => {
+        if (err) {
+            console.error("❌ Failed to retrieve problem:", err);
+            return res.status(500).json({ error: "Failed to retrieve problem" });
+        }
+        if (problemResults.length === 0) {
+            return res.status(404).json({ error: "Problem not found" });
+        }
+
+        db.query(companiesQuery, [id], (err, companyResults) => {
+            if (err) {
+                console.error("❌ Failed to retrieve companies:", err);
+                return res.status(500).json({ error: "Failed to retrieve companies" });
+            }
+
+            db.query(tagsQuery, [id], (err, tagResults) => {
+                if (err) {
+                    console.error("❌ Failed to retrieve tags:", err);
+                    return res.status(500).json({ error: "Failed to retrieve tags" });
+                }
+
+                res.json({
+                    problem: problemResults[0],   // 题目信息
+                    companies: companyResults,    // 相关公司
+                    tags: tagResults              // 相关标签
+                });
+            });
+        });
+    });
+});
+
 module.exports = router;

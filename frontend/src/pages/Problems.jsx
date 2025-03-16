@@ -157,6 +157,20 @@ function Problems() {
         setIsModalOpen(true);         // 打开弹窗
     };
 
+
+    const [problemDetails, setProblemDetails] = useState(null);
+    const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
+    const fetchProblemDetails = (problemId) => {
+        axios.get(`http://localhost:1234/api/problems/${problemId}/details`)
+            .then(res => {
+                setProblemDetails(res.data);
+                setIsDetailsModalOpen(true); // 打开弹窗
+            })
+            .catch(err => {
+                console.error(err);
+                alert("Failed to fetch problem details");
+            });
+    };
     return (
         
         <div className="p-10 bg-gray-50 min-h-screen flex flex-col items-center text-black">
@@ -282,6 +296,12 @@ function Problems() {
                                     >
                                         Edit
                                     </button>
+                                    <button 
+                                        onClick={() => fetchProblemDetails(problem.problem_id)}
+                                        className="bg-blue-500 text-white px-6 py-3 rounded-lg transition-all duration-200 transform hover:scale-105 hover:bg-blue-400 active:scale-95 active:bg-blue-600 focus:ring-2 focus:ring-blue-300 shadow-md hover:shadow-lg"
+                                    >
+                                        View Details
+                                    </button>
                                 </div>
                             </td>
                         </tr>
@@ -330,6 +350,42 @@ function Problems() {
                                 className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600"
                             >
                                 Cancel
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {isDetailsModalOpen && problemDetails && (
+                <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+                    <div className="bg-white p-6 rounded-lg shadow-lg w-96">
+                        <h2 className="text-lg font-bold mb-4">Problem Details</h2>
+
+                        <p><strong>Title:</strong> {problemDetails.problem.title}</p>
+                        <p><strong>Difficulty:</strong> {problemDetails.problem.difficulty}</p>
+
+                        <h3 className="mt-4 font-semibold">🔹 Related Companies</h3>
+                        <ul className="list-disc pl-5">
+                            {problemDetails.companies.length > 0 ? 
+                                problemDetails.companies.map(c => <li key={c.company_id}>{c.company_name}</li>) :
+                                <li>None</li>
+                            }
+                        </ul>
+
+                        <h3 className="mt-4 font-semibold">🔹 Related Tags</h3>
+                        <ul className="list-disc pl-5">
+                            {problemDetails.tags.length > 0 ? 
+                                problemDetails.tags.map(t => <li key={t.tag_id}>{t.tag_name}</li>) :
+                                <li>None</li>
+                            }
+                        </ul>
+
+                        <div className="flex justify-end mt-4">
+                            <button 
+                                onClick={() => setIsDetailsModalOpen(false)} 
+                                className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600"
+                            >
+                                Close
                             </button>
                         </div>
                     </div>

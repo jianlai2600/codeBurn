@@ -19,6 +19,52 @@ router.get("/:id", (req, res) => {
     });
 });
 
+// 按 User ID 搜索
+router.get("/id/:userId", (req, res) => {
+    const userId = req.params.userId;
+    db.query("SELECT * FROM User WHERE user_id = ?", [userId], (err, results) => {
+        if (err) {
+            console.error("❌ Database error:", err);
+            return res.status(500).json({ error: "Database error", details: err });
+        }
+        if (results.length === 0) {
+            return res.status(404).json({ error: `User ID ${userId} not found!` });
+        }
+        res.json(results[0]);  // 仅返回一个用户
+    });
+});
+
+// 按 Username 搜索
+router.get("/username/:username", (req, res) => {
+    const username = req.params.username;
+    db.query("SELECT * FROM User WHERE username LIKE ?", [`%${username}%`], (err, results) => {
+        if (err) {
+            console.error("❌ Database error:", err);
+            return res.status(500).json({ error: "Database error", details: err });
+        }
+        if (results.length === 0) {
+            return res.status(404).json({ error: `No users found with username: ${username}` });
+        }
+        res.json(results);  // 可能返回多个用户
+    });
+});
+
+// 按 Email 搜索
+router.get("/email/:email", (req, res) => {
+    const email = req.params.email;
+    db.query("SELECT * FROM User WHERE email LIKE ?", [`%${email}%`], (err, results) => {
+        if (err) {
+            console.error("❌ Database error:", err);
+            return res.status(500).json({ error: "Database error", details: err });
+        }
+        if (results.length === 0) {
+            return res.status(404).json({ error: `No users found with email: ${email}` });
+        }
+        res.json(results);  // 可能返回多个用户
+    });
+});
+
+
 // 添加用户
 router.post("/", (req, res) => {
     console.log("📥 Received POST request:", req.body);
@@ -30,26 +76,37 @@ router.post("/", (req, res) => {
         return res.status(400).json({ error: "All fields are required!" });
     }
 
-    db.query("INSERT INTO User (username, email, avatar_url) VALUES (?, ?, ?)",
-        [username, email, avatar_url], 
-        (err, result) => {
-            if (err) {
-                if (err.code === 'ER_DUP_ENTRY') {
-                    if (err.sqlMessage.includes("username")) {
-                        console.error("❌ Duplicate Username Error:", err);
-                        return res.status(400).json({ error: "Username already exists!" });
-                    } else if (err.sqlMessage.includes("email")) {
-                        console.error("❌ Duplicate Email Error:", err);
-                        return res.status(400).json({ error: "Email already exists!" });
-                    }
-                    return res.status(400).json({ error: "Duplicate entry!" });
-                }
-                console.error("❌ Database Insert Error:", err);
-                return res.status(500).json({ error: "Database error", details: err });
-            }
-            res.json({ message: "User added successfully", user_id: result.insertId });
+    // 🔎 先检查 username 和 email 是否已存在
+    db.query("SELECT * FROM User WHERE username = ? OR email = ?", [username, email], (err, results) => {
+        if (err) {
+            console.error("❌ Database Query Error:", err);
+            return res.status(500).json({ error: "Database error", details: err });
         }
-    );
+
+        if (results.length > 0) {
+            // 检查是 username 还是 email 重复
+            const existingUser = results[0];
+            if (existingUser.username === username) {
+                return res.status(400).json({ error: "Username already exists!" });
+            }
+            if (existingUser.email === email) {
+                return res.status(400).json({ error: "Email already exists!" });
+            }
+        }
+
+        // 🔥 通过查重后，插入用户
+        db.query(
+            "INSERT INTO User (username, email, avatar_url) VALUES (?, ?, ?)",
+            [username, email, avatar_url],
+            (insertErr, result) => {
+                if (insertErr) {
+                    console.error("❌ Database Insert Error:", insertErr);
+                    return res.status(500).json({ error: "Database error", details: insertErr });
+                }
+                res.json({ message: "User added successfully", user_id: result.insertId });
+            }
+        );
+    });
 });
 
 // 删除用户
