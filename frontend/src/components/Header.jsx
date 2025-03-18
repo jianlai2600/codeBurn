@@ -14,6 +14,7 @@ function Header() {
                     <Link to="/users" className="px-4 py-2 text-lg font-medium text-gray-300 hover:text-white hover:bg-gray-200 rounded-lg transition-all">Users</Link>
                     <Link to="/problems" className="px-4 py-2 text-lg font-medium text-gray-300 hover:text-white hover:bg-gray-200 rounded-lg transition-all">Problems</Link>
                     <Link to="/solves" className="px-4 py-2 text-lg font-medium text-gray-300 hover:text-white hover:bg-gray-200 rounded-lg transition-all">Solves</Link>
+                    <Link to="/discussions" className="px-4 py-2 text-lg font-medium text-gray-300 hover:text-white hover:bg-gray-200 rounded-lg transition-all">Discussions</Link>
                 </div>
             </nav>
         </div>

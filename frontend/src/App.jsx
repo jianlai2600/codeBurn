@@ -6,7 +6,7 @@ import Users from "./pages/Users";
 import Stats from "./pages/Stats";
 import Problems from "./pages/Problems";
 import Solves from "./pages/Solves";
-
+import Discussions from "./pages/Discussions";
 
 function App() {
     return (
@@ -20,6 +20,7 @@ function App() {
                         <Route path="/Users" element={<Users />} />
                         <Route path="/Problems" element={<Problems />} />
                         <Route path="/Solves" element={<Solves />} />
+                        <Route path="/Discussions" element={<Discussions />} />
                     </Routes>
                 </div>
                 <Footer />
