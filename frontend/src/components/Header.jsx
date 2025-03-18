@@ -3,22 +3,38 @@ import { Link } from "react-router-dom";
 
 function Header() {
     return (
-        <div className="w-screen bg-gradient-to-br from-red-600 to-purple-700 py-4 flex items-center justify-center">
-            <nav className="w-full max-w-4xl bg-white text-gray-900 rounded-lg shadow-2xl px-10 py-4 flex justify-between items-center">
-                <h1 className="text-3xl font-extrabold flex items-center gap-2">
-                    
-                    <Link to="/" className="text-yellow-500">🚀 <span className="text-yellow-500">CodeBurn</span></Link>
+        <div className="w-screen bg-gradient-to-br from-red-600 to-purple-700 py-4 flex items-center justify-center shadow-lg">
+            <nav className="w-full max-w-6xl bg-white text-gray-900 rounded-xl shadow-xl px-8 py-4 flex justify-between items-center">
+                
+                {/* 🔹 Logo with enhanced styling */}
+                <h1 className="text-4xl font-extrabold flex items-center gap-3">
+                    <Link to="/" className="inline-flex items-center gap-2 text-yellow-500 hover:text-yellow-400 transition-all duration-300">
+                        <span className="text-5xl">🚀</span>  
+                        <span className="text-yellow-500 drop-shadow-lg">CodeBurn</span>
+                    </Link>
                 </h1>
-                <div className="flex space-x-8">
-                    <Link to="/" className="px-4 py-2 text-lg font-medium text-gray-300 hover:text-white hover:bg-gray-200 rounded-lg transition-all">Home</Link>
-                    <Link to="/users" className="px-4 py-2 text-lg font-medium text-gray-300 hover:text-white hover:bg-gray-200 rounded-lg transition-all">Users</Link>
-                    <Link to="/problems" className="px-4 py-2 text-lg font-medium text-gray-300 hover:text-white hover:bg-gray-200 rounded-lg transition-all">Problems</Link>
-                    <Link to="/solves" className="px-4 py-2 text-lg font-medium text-gray-300 hover:text-white hover:bg-gray-200 rounded-lg transition-all">Solves</Link>
-                    <Link to="/discussions" className="px-4 py-2 text-lg font-medium text-gray-300 hover:text-white hover:bg-gray-200 rounded-lg transition-all">Discussions</Link>
+
+                {/* 🔹 Navigation Bar */}
+                <div className="flex space-x-6 text-lg font-semibold">
+                    <NavItem to="/" label="Home" />
+                    <NavItem to="/users" label="Users" />
+                    <NavItem to="/problems" label="Problems" />
+                    <NavItem to="/solves" label="Solves" />
+                    <NavItem to="/discussions" label="Discussions" />
                 </div>
             </nav>
         </div>
     );
 }
+
+/** 🔹 Reusable Nav Item Component */
+const NavItem = ({ to, label }) => (
+    <Link 
+        to={to} 
+        className="px-4 py-2 rounded-lg transition-all duration-300 text-gray-700 hover:text-white hover:bg-red-500 hover:scale-105 active:scale-95 active:text-gray-100"
+    >
+        {label}
+    </Link>
+);
 
 export default Header;

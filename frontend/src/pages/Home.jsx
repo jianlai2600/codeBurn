@@ -5,7 +5,7 @@ function Home() {
         <div className="w-screen h-screen flex items-center justify-center bg-gradient-to-br from-blue-600 to-purple-700">
             <div className="w-full max-w-2xl bg-white text-gray-900 rounded-lg shadow-2xl p-12 text-center">
                 <h1 className="text-5xl font-extrabold flex items-center justify-center gap-2">
-                    🚀 <span className="text-yellow-500">CodeBurn</span>
+                    🚀<span className="text-yellow-500">CodeBurn</span>
                 </h1>
                 <p className="text-lg opacity-80 mt-3">
                     Your ultimate LeetCode progress tracker & coding hub!
