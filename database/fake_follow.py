@@ -7,12 +7,13 @@ fake = Faker()
 
 # 连接 MySQL 数据库
 conn = pymysql.connect(
-    host="localhost",
-    user="root",
-    password="1991Lyf@@@",
-    database="burncode",
+    host="database-1.cpe0kkg0uyqt.us-east-2.rds.amazonaws.com",  # 替换为你的 RDS 终端节点
+    user="admin",  # 替换为你的 RDS 用户名
+    password="1991Lyf!!!",  # 替换为你的 RDS 密码
+    database="burncode",  # 你的数据库名
     charset="utf8mb4"
 )
+
 cursor = conn.cursor()
 
 try:

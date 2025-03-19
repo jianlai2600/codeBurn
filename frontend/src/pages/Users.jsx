@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
+import API_BASE_URL from "../config";
 
 function Users() {
     const [users, setUsers] = useState([]);
@@ -40,7 +41,7 @@ function Users() {
     }, []);
 
     const fetchUsers = () => {
-        axios.get("http://localhost:1234/api/users")
+        axios.get(`${API_BASE_URL}/api/users`)
             .then(res => setUsers(res.data))
             .catch(err => console.error(err));
     };
@@ -54,7 +55,7 @@ function Users() {
             return;
         }
     
-        axios.post("http://localhost:1234/api/users", newUser)
+        axios.post(`${API_BASE_URL}/api/users`, newUser)
             .then(() => {
                 fetchUsers();
                 setNewUser({ username: "", email: "", avatar_url: "" });
@@ -77,14 +78,14 @@ function Users() {
 
     // 删除用户
     const deleteUser = (id) => {
-        axios.delete(`http://localhost:1234/api/users/${id}`)
+        axios.delete(`${API_BASE_URL}/api/users/${id}`)
             .then(() => fetchUsers())
             .catch(err => console.error(err));
     };
 
     // 更新用户
     const updateUser = () => {
-        axios.put(`http://localhost:1234/api/users/${selectedUser.user_id}`, selectedUser)
+        axios.put(`${API_BASE_URL}/api/users/${selectedUser.user_id}`, selectedUser)
             .then(() => {
                 fetchUsers();  // 刷新用户列表
                 setIsModalOpen(false);  // 关闭弹窗
@@ -111,7 +112,7 @@ function Users() {
             alert("Please enter a User ID to search!");
             return;
         }
-        axios.get(`http://localhost:1234/api/users/id/${searchId}`)
+        axios.get(`${API_BASE_URL}/api/users/id/${searchId}`)
             .then(res => setUsers([res.data]))  // 仅返回一个用户
             .catch(err => {
                 console.error(err);
@@ -125,7 +126,7 @@ function Users() {
             alert("Please enter a Username to search!");
             return;
         }
-        axios.get(`http://localhost:1234/api/users/username/${searchUsername}`)
+        axios.get(`${API_BASE_URL}/api/users/username/${searchUsername}`)
             .then(res => setUsers(res.data))  // 可能返回多个用户
             .catch(err => {
                 console.error(err);
@@ -139,7 +140,7 @@ function Users() {
             alert("Please enter an Email to search!");
             return;
         }
-        axios.get(`http://localhost:1234/api/users/email/${searchEmail}`)
+        axios.get(`${API_BASE_URL}/api/users/email/${searchEmail}`)
             .then(res => setUsers(res.data))  // 可能返回多个用户
             .catch(err => {
                 console.error(err);

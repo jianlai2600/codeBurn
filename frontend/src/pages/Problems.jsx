@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
+import API_BASE_URL from "../config";
 
 function Problems() {
     const [problems, setProblems] = useState([]);
@@ -78,7 +79,7 @@ function Problems() {
     }, []);
 
     const fetchProblems = () => {
-        axios.get("http://localhost:1234/api/problems")
+        axios.get(`${API_BASE_URL}/api/problems`)
             .then(res => setProblems(res.data))
             .catch(err => console.error(err));
     };
@@ -89,7 +90,7 @@ function Problems() {
             alert("Please enter a Problem ID to search!");
             return;
         }
-        axios.get(`http://localhost:1234/api/problems/${searchId}`)
+        axios.get(`${API_BASE_URL}/api/problems/${searchId}`)
             .then(res => setProblems([res.data]))
             .catch(err => {
                 console.error(err);
@@ -105,7 +106,7 @@ function Problems() {
             alert("Please enter a Problem Title to search!");
             return;
         }
-        axios.get(`http://localhost:1234/api/problems/title/${searchTitle}`)
+        axios.get(`${API_BASE_URL}/api/problems/title/${searchTitle}`)
             .then(res => setProblems(res.data))
             .catch(err => {
                 console.error(err);
@@ -119,7 +120,7 @@ function Problems() {
             alert("All fields are required!");
             return;
         }
-        axios.post("http://localhost:1234/api/problems", newProblem)
+        axios.post(`${API_BASE_URL}/api/problems`, newProblem)
             .then(() => {
                 fetchProblems();
                 setNewProblem({ title: "", difficulty: "", url: "" });
@@ -136,13 +137,13 @@ function Problems() {
 
     // 删除问题
     const deleteProblem = (id) => {
-        axios.delete(`http://localhost:1234/api/problems/${id}`)
+        axios.delete(`${API_BASE_URL}/api/problems/${id}`)
             .then(() => fetchProblems())
             .catch(err => console.error(err));
     };
     // 更新问题
     const updateProblem = () => {
-        axios.put(`http://localhost:1234/api/problems/${selectedProblem.problem_id}`, selectedProblem)
+        axios.put(`${API_BASE_URL}/api/problems/${selectedProblem.problem_id}`, selectedProblem)
             .then(() => {
                 fetchProblems();  // 刷新问题列表
                 setIsModalOpen(false);  // 关闭弹窗
@@ -161,7 +162,7 @@ function Problems() {
     const [problemDetails, setProblemDetails] = useState(null);
     const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
     const fetchProblemDetails = (problemId) => {
-        axios.get(`http://localhost:1234/api/problems/${problemId}/details`)
+        axios.get(`${API_BASE_URL}/api/problems/${problemId}/details`)
             .then(res => {
                 setProblemDetails(res.data);
                 setIsDetailsModalOpen(true); // 打开弹窗

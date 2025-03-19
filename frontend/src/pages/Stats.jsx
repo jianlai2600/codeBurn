@@ -1,13 +1,14 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import API_BASE_URL from "../config";
 
 function Stats() {
     const [stats, setStats] = useState({ total_users: 0, total_problems: 0, total_solves: 0 });
     const navigate = useNavigate(); // 用于跳转页面
 
     useEffect(() => {
-        axios.get("http://localhost:1234/api/stats")
+        axios.get(`${API_BASE_URL}/api/stats`)
             .then(res => setStats(res.data))
             .catch(err => console.error("Failed to load stats", err));
     }, []);

@@ -16,6 +16,11 @@ const appearsInRoutes = require("./routes/appearsInRoutes");
 const hasTagRoutes = require("./routes/hasTagRoutes");
 const statsRoutes = require("./routes/statsRoutes");
 
+// ✅ 处理根路径 `/`，防止 404
+app.get("/", (req, res) => {
+    res.send("🔥 BurnCode 后端运行正常！🚀");
+});
+
 // 使用路由
 app.use("/api/stats", statsRoutes);
 app.use("/api/users", usersRoutes);
@@ -27,8 +32,8 @@ app.use("/api/solves", solvesRoutes);
 app.use("/api/appearsIn", appearsInRoutes);
 app.use("/api/hasTag", hasTagRoutes);
 
-// 监听 1234 端口
-const PORT = 1234;
+// ✅ 必须使用 Heroku 提供的 `PORT`
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`🔥 Server running on port ${PORT}`);
 });

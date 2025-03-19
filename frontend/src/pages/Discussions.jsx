@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
+import API_BASE_URL from "../config";
 
 function Discussions() {
     const [discussions, setDiscussions] = useState([]);
@@ -79,7 +80,7 @@ function Discussions() {
     }, []);
 
     const fetchDiscussions = () => {
-        axios.get("http://localhost:1234/api/discussions")
+        axios.get(`${API_BASE_URL}/api/discussions`)
             .then(res => setDiscussions(res.data))
             .catch(err => console.error(err));
     };
@@ -90,7 +91,7 @@ function Discussions() {
             alert("Please enter a Discussion ID to search!");
             return;
         }
-        axios.get(`http://localhost:1234/api/discussions/${searchId}`)
+        axios.get(`${API_BASE_URL}/api/discussions/${searchId}`)
             .then(res => setDiscussions([res.data]))
             .catch(err => {
                 console.error(err);
@@ -106,7 +107,7 @@ function Discussions() {
             alert("Please enter Discussion Content to search!");
             return;
         }
-        axios.get(`http://localhost:1234/api/discussions/content/${searchTitle}`)
+        axios.get(`${API_BASE_URL}/api/discussions/content/${searchTitle}`)
             .then(res => setDiscussions(res.data))
             .catch(err => {
                 console.error(err);
@@ -120,7 +121,7 @@ function Discussions() {
                 return;
             }
         
-            axios.post("http://localhost:1234/api/discussions", newDiscussion)
+            axios.post(`${API_BASE_URL}/api/discussions`, newDiscussion)
                 .then(() => {
                     fetchDiscussions();
                     setNewDiscussion({ user_id: "", problem_id: "", content: "" });
@@ -144,14 +145,14 @@ function Discussions() {
     
         // 删除讨论
         const deleteDiscussion = (id) => {
-            axios.delete(`http://localhost:1234/api/discussions/${id}`)
+            axios.delete(`${API_BASE_URL}/api/discussions/${id}`)
                 .then(() => fetchDiscussions())
                 .catch(err => console.error(err));
         };
     
         // 更新讨论
         const updateDiscussion = () => {
-            axios.put(`http://localhost:1234/api/discussions/${selectedDiscussion.discussion_id}`, selectedDiscussion)
+            axios.put(`${API_BASE_URL}/api/discussions/${selectedDiscussion.discussion_id}`, selectedDiscussion)
                 .then(() => {
                     fetchDiscussions();  // 刷新讨论列表
                     setIsModalOpen(false);  // 关闭弹窗
@@ -169,7 +170,7 @@ function Discussions() {
         const [searchTitle, setSearchTitle] = useState(""); 
 
         const fetchDiscussionDetails = (discussionId) => {
-            axios.get(`http://localhost:1234/api/discussions/${discussionId}/details`)
+            axios.get(`${API_BASE_URL}/api/discussions/${discussionId}/details`)
                 .then(res => {
                     setDiscussionDetails(res.data);
                     setIsDetailsModalOpen(true); // 打开弹窗

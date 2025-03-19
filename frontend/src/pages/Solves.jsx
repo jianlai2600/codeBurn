@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
+import API_BASE_URL from "../config";
 
 function Solves() {
     const [solves, setSolves] = useState([]);
@@ -84,7 +85,7 @@ function Solves() {
     }, []);
 
     const fetchSolves = () => {
-        axios.get("http://localhost:1234/api/solves")
+        axios.get(`${API_BASE_URL}/api/solves`)
             .then(res => setSolves(res.data))
             .catch(err => console.error(err));
     };
@@ -95,7 +96,7 @@ function Solves() {
             alert("Please enter a Solve ID to search!");
             return;
         }
-        axios.get(`http://localhost:1234/api/solves/${searchId}`)
+        axios.get(`${API_BASE_URL}/api/solves/${searchId}`)
             .then(res => setSolves([res.data]))
             .catch(err => {
                 console.error(err);
@@ -113,7 +114,7 @@ const searchSolveById = () => {
         alert("Please enter a Solve ID to search!");
         return;
     }
-    axios.get(`http://localhost:1234/api/solves/id/${searchSolveId}`)
+    axios.get(`${API_BASE_URL}/api/solves/id/${searchSolveId}`)
         .then(res => setSolves([res.data]))  // 只有一个记录
         .catch(err => {
             console.error(err);
@@ -127,7 +128,7 @@ const searchSolvesByUserId = () => {
         alert("Please enter a User ID to search!");
         return;
     }
-    axios.get(`http://localhost:1234/api/solves/user/${searchUserId}`)
+    axios.get(`${API_BASE_URL}/api/solves/user/${searchUserId}`)
         .then(res => setSolves(res.data))  // 可能返回多个记录
         .catch(err => {
             console.error(err);
@@ -141,7 +142,7 @@ const searchSolvesByProblemId = () => {
         alert("Please enter a Problem ID to search!");
         return;
     }
-    axios.get(`http://localhost:1234/api/solves/problem/${searchProblemId}`)
+    axios.get(`${API_BASE_URL}/api/solves/problem/${searchProblemId}`)
         .then(res => setSolves(res.data))  // 可能返回多个记录
         .catch(err => {
             console.error(err);
@@ -164,7 +165,7 @@ const searchSolvesByProblemId = () => {
             return;
         }
     
-        axios.post("http://localhost:1234/api/solves", newSolve)
+        axios.post(`${API_BASE_URL}/api/solves`, newSolve)
             .then(() => {
                 fetchSolves();
                 setNewSolve({ user_id: "", problem_id: "", solve_date: "", attempts: "", status: "" });
@@ -187,7 +188,7 @@ const searchSolvesByProblemId = () => {
     
         // 删除解题记录
         const deleteSolve = (id) => {
-            axios.delete(`http://localhost:1234/api/solves/${id}`)
+            axios.delete(`${API_BASE_URL}/api/solves/${id}`)
                 .then(() => fetchSolves())
                 .catch(err => console.error(err));
         };
@@ -205,7 +206,7 @@ const searchSolvesByProblemId = () => {
             // 确保 `solve_date` 是 `YYYY-MM-DD` 格式
             const formattedDate = formatDateForMySQL(selectedSolve.solve_date);
         
-            axios.put(`http://localhost:1234/api/solves/${selectedSolve.solve_id}`, {
+            axios.put(`${API_BASE_URL}/api/solves/${selectedSolve.solve_id}`, {
                 ...selectedSolve,
                 solve_date: formattedDate // 传递 MySQL 兼容格式
             })
