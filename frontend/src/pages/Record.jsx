@@ -10,8 +10,10 @@ function Records() {
 
     // 新增这两个状态
     const [newProblemId, setNewProblemId] = useState("");
+    const [timeSpent, setTimeSpent] = useState("");
+    const [company, setCompany] = useState("");
+    const [interview, setInterview] = useState(false);
     const [submitMsg, setSubmitMsg] = useState("");
-
 
     useEffect(() => {
         const name = localStorage.getItem("user_name");
@@ -52,30 +54,59 @@ function Records() {
             </h2>
 
             {/* ✅ 最近解题记录 */}
-            <div className="bg-white shadow-md rounded-lg p-6 w-full max-w-4xl">
-                <table className="w-full text-left table-auto">
-                    <thead>
-                        <tr className="border-b">
-                            <th className="py-2">#</th>
-                            <th className="py-2">Problem ID</th>
-                            <th className="py-2">Date</th>
-                            <th className="py-2">Status</th>
+            <div className="bg-white shadow-md rounded-xl p-6 w-full max-w-6xl mt-8 border border-gray-200">
+                <h2 className="text-2xl font-bold text-gray-800 mb-4">🧠 Recent Solved Problems</h2>
+                <table className="w-full table-auto text-sm text-gray-800">
+                    <thead className="bg-gray-100 text-gray-600 uppercase text-xs">
+                        <tr>
+                            <th className="px-4 py-3 text-left">#</th>
+                            <th className="px-4 py-3 text-left">Title</th>
+                            <th className="px-4 py-3 text-left">Time</th>
+                            <th className="px-4 py-3 text-left">Interview</th>
+                            <th className="px-4 py-3 text-left">Date</th>
+                            <th className="px-4 py-3 text-left">Status</th>
                         </tr>
                     </thead>
                     <tbody>
                         {solves.length === 0 ? (
                             <tr>
-                                <td colSpan="4" className="text-center py-4 text-gray-400">
+                                <td colSpan="6" className="text-center py-6 text-gray-400">
                                     No recent problems found.
                                 </td>
                             </tr>
                         ) : (
                             solves.map((solve, index) => (
-                                <tr key={solve.solve_id} className="border-b hover:bg-gray-50">
-                                    <td className="py-2">{index + 1}</td>
-                                    <td className="py-2">{solve.problem_id}</td>
-                                    <td className="py-2">{solve.solve_date}</td>
-                                    <td className="py-2">{solve.status}</td>
+                                <tr key={`${solve.problem_id}-${solve.solved_date}`} className="border-b hover:bg-gray-50 transition">
+                                    <td className="px-4 py-3">{index + 1}</td>
+                                    <td className="px-4 py-3 text-blue-600 underline">
+                                        <a
+                                            href={`https://leetcode.com/problems/${solve.title_slug}`}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                        >
+                                            {solve.title || solve.title_slug}
+                                        </a>
+                                    </td>
+                                    <td className="px-4 py-3 text-gray-700">
+                                        {solve.time_spent_minutes ? `${solve.time_spent_minutes} min` : "--"}
+                                    </td>
+                                    <td className="px-4 py-3">
+                                        {solve.encountered_in_interview ? (
+                                            <span className="text-purple-600 font-semibold">
+                                                {solve.company || "Yes"}
+                                            </span>
+                                        ) : (
+                                            <span className="text-gray-400">—</span>
+                                        )}
+                                    </td>
+                                    <td className="px-4 py-3">{solve.solved_date}</td>
+                                    <td className="px-4 py-3">
+                                        {solve.status === "AC" ? (
+                                            <span className="text-green-600 font-semibold">✔ Accepted</span>
+                                        ) : (
+                                            <span className="text-red-500 font-semibold">❌ {solve.status}</span>
+                                        )}
+                                    </td>
                                 </tr>
                             ))
                         )}
@@ -85,40 +116,88 @@ function Records() {
             
             {/* 🆕 Add problem solved today */}
             <div className="bg-white shadow-xl rounded-2xl p-6 w-full max-w-xl mt-10 border border-green-200">
-                <h3 className="text-xl font-semibold text-green-700 mb-4">✨ Add a problem you solved today</h3>
+            <h3 className="text-2xl font-bold text-green-700 mb-6">✨ Add a Problem You Solved Today</h3>
 
-                <div className="flex flex-col sm:flex-row items-center gap-4">
-                    <input
-                        type="number"
-                        placeholder="Enter Problem ID"
-                        value={newProblemId}
-                        onChange={(e) => setNewProblemId(e.target.value)}
-                        className="px-5 py-3 rounded-lg border border-gray-300 text-black focus:outline-none focus:ring-2 focus:ring-green-500 w-full sm:w-2/3 transition"
-                    />
-                    <button
-                        onClick={() => {
-                            if (!user.google_id || !newProblemId) return;
-                            axios
-                                .post(`${API_BASE_URL}/api/solves/add-by-google-id`, {
-                                    google_id: user.google_id,
-                                    problem_id: parseInt(newProblemId),
-                                })
-                                .then((res) => {
-                                    setSubmitMsg("✅ Added successfully!");
-                                    setNewProblemId("");
-                                })
-                                .catch((err) => {
-                                    console.error("❌ 添加失败", err);
-                                    setSubmitMsg("❌ Failed to add.");
-                                });
-                        }}
-                        className="bg-green-600 hover:bg-green-700 text-white font-semibold px-6 py-3 rounded-lg shadow-md transition duration-200"
-                    >
-                        ➕ Submit
-                    </button>
+            <div className="flex flex-col gap-4">
+                {/* Problem ID */}
+                <div>
+                <label className="block text-gray-700 text-sm font-medium mb-1">🔢 Problem ID</label>
+                <input
+                    type="number"
+                    placeholder="e.g. 1 for Two Sum"
+                    value={newProblemId}
+                    onChange={(e) => setNewProblemId(e.target.value)}
+                    className="w-full px-4 py-3 rounded-lg border border-gray-300 text-black focus:outline-none focus:ring-2 focus:ring-green-500 transition"
+                />
                 </div>
 
-                {submitMsg && <p className="text-sm text-gray-500 mt-3">{submitMsg}</p>}
+                {/* Time Spent */}
+                <div>
+                <label className="block text-gray-700 text-sm font-medium mb-1">⏱ Time Spent (minutes)</label>
+                <input
+                    type="number"
+                    placeholder="e.g. 25"
+                    value={timeSpent}
+                    onChange={(e) => setTimeSpent(e.target.value)}
+                    className="w-full px-4 py-3 rounded-lg border border-gray-300 text-black"
+                />
+                </div>
+
+                {/* Company */}
+                <div>
+                <label className="block text-gray-700 text-sm font-medium mb-1">🏢 Company (if in an interview)</label>
+                <input
+                    type="text"
+                    placeholder="e.g. Google, Amazon"
+                    value={company}
+                    onChange={(e) => setCompany(e.target.value)}
+                    className="w-full px-4 py-3 rounded-lg border border-gray-300 text-black"
+                />
+                </div>
+
+                {/* Interview Checkbox */}
+                <label className="inline-flex items-center text-sm text-gray-700">
+                <input
+                    type="checkbox"
+                    checked={interview}
+                    onChange={(e) => setInterview(e.target.checked)}
+                    className="mr-2 h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded"
+                />
+                This problem was asked in a real interview
+                </label>
+
+                {/* Submit */}
+                <button
+                onClick={() => {
+                    if (!user.google_id || !newProblemId) return;
+
+                    axios
+                    .post(`${API_BASE_URL}/api/solves/add-by-google-id`, {
+                        google_id: user.google_id,
+                        problem_id: parseInt(newProblemId),
+                        time_spent_minutes: parseInt(timeSpent) || null,
+                        encountered_in_interview: interview,
+                        company: company || null,
+                    })
+                    .then((res) => {
+                        setSubmitMsg("✅ Added successfully!");
+                        setNewProblemId("");
+                        setTimeSpent("");
+                        setInterview(false);
+                        setCompany("");
+                    })
+                    .catch((err) => {
+                        console.error("❌ 添加失败", err);
+                        setSubmitMsg("❌ Failed to add.");
+                    });
+                }}
+                className="bg-green-600 hover:bg-green-700 text-white font-semibold px-6 py-3 rounded-lg shadow-md transition duration-200"
+                >
+                ➕ Submit
+                </button>
+
+                {submitMsg && <p className="text-sm text-gray-500">{submitMsg}</p>}
+            </div>
             </div>
 
             {/* 🔗 导航 */}

@@ -2,3 +2,41 @@ node_modules/.package-lock.json
 package.json
 package-lock.json
 
+package-lock.json
+package.json
+node_modules/.package-lock.json
+
+# Node modules
+**/node_modules/
+**/.vite/
+
+# 环境变量
+.env
+
+# 日志
+*.log
+
+# 数据库文件
+*.sqlite
+*.sql
+burncode.session.sql
+
+# 打包产物
+dist/
+build/
+
+# VSCode 工作区设置
+.vscode/
+
+# 本地测试/调试数据
+test/
+*.local
+*.cache
+.DS_Store
+
+# OS系统文件
+Thumbs.db
+.DS_Store
+
+# JSON 临时文件（如果不是源码）
+static.json

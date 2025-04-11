@@ -131,60 +131,140 @@ router.put("/:solveId", (req, res) => {
         }
     );
 });
-
 router.get("/recent/:google_id", (req, res) => {
     const { google_id } = req.params;
 
     const query = `
-        SELECT s.solve_id, s.problem_id, s.solve_date, s.status
-        FROM Solves s
-        JOIN Users u ON s.user_id = u.user_id
-        WHERE u.google_id = ?
-        ORDER BY s.solve_date DESC
-        LIMIT 10;
+        SELECT 
+            question_id, 
+            title_slug,
+            solved_date, 
+            status, 
+            time_spent_minutes, 
+            encountered_in_interview, 
+            company 
+        FROM user_solved_questions
+        WHERE google_id = ?
+        ORDER BY solved_date DESC
+        LIMIT 10
     `;
 
     db.query(query, [google_id], (err, results) => {
         if (err) {
-            console.error("❌ 查询最近解题记录失败:", err);
-            return res.status(500).json({ error: "Failed to fetch solves" });
+            console.error("❌ 查询最近做题记录失败:", err);
+            return res.status(500).json({ error: "Failed to fetch recent solves" });
         }
         res.json(results);
     });
 });
 
-// POST /api/solves/add-by-google-id
 router.post("/add-by-google-id", (req, res) => {
-    const { google_id, problem_id } = req.body;
+    const {
+        google_id,
+        problem_id,
+        time_spent_minutes,
+        encountered_in_interview,
+        company
+    } = req.body;
 
     if (!google_id || !problem_id) {
         return res.status(400).json({ error: "Missing google_id or problem_id" });
     }
 
-    // 先查出 user_id
-    const userQuery = "SELECT user_id FROM User WHERE user_id = ?";
-    db.query(userQuery, [google_id], (err, userResult) => {
-        if (err || userResult.length === 0) {
-            console.error("❌ 找不到用户:", err);
-            return res.status(404).json({ error: "User not found" });
+    // 获取题目的 title_slug
+    const slugQuery = "SELECT title_slug FROM leetcode_questions WHERE frontend_id = ?";
+    db.query(slugQuery, [problem_id], (err, slugResult) => {
+        if (err || slugResult.length === 0) {
+            console.error("❌ 找不到题目:", err);
+            return res.status(404).json({ error: "Problem not found" });
         }
 
-        const user_id = userResult[0].user_id;
+        const title_slug = slugResult[0].title_slug;
         const today = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
 
         const insertQuery = `
-            INSERT INTO Solves (user_id, problem_id, solve_date, status)
-            VALUES (?, ?, ?, 'Accepted')`; // 默认 Accepted，也可以让前端选
+            INSERT INTO user_solved_questions (
+                google_id, question_id, title_slug, solved_date, status,
+                time_spent_minutes, encountered_in_interview, company
+            ) VALUES (?, ?, ?, ?, 'AC', ?, ?, ?)
+            ON DUPLICATE KEY UPDATE
+                solved_date = VALUES(solved_date),
+                status = VALUES(status),
+                time_spent_minutes = VALUES(time_spent_minutes),
+                encountered_in_interview = VALUES(encountered_in_interview),
+                company = VALUES(company)
+        `;
 
-        db.query(insertQuery, [user_id, problem_id, today], (err2, result2) => {
+        db.query(insertQuery, [
+            google_id,
+            problem_id,
+            title_slug,
+            today,
+            time_spent_minutes || null,
+            encountered_in_interview ? 1 : 0,
+            company || null
+        ], (err2, result2) => {
             if (err2) {
                 console.error("❌ 插入解题记录失败:", err2);
                 return res.status(500).json({ error: "Insert failed" });
             }
 
-            res.json({ success: true, solve_id: result2.insertId });
+            res.json({ success: true, message: "✅ 做题记录已保存" });
         });
     });
 });
+
+router.post("/add-by-google-id", async (req, res) => {
+    const {
+      google_id,
+      problem_id,
+      time_spent_minutes,
+      encountered_in_interview,
+      company
+    } = req.body;
+  
+    try {
+      const [slugRow] = await new Promise((resolve, reject) => {
+        db.query(
+          "SELECT title_slug FROM leetcode_questions WHERE frontend_id = ?",
+          [problem_id],
+          (err, results) => {
+            if (err) reject(err);
+            else resolve(results);
+          }
+        );
+      });
+  
+      if (!slugRow) return res.status(404).json({ message: "题目不存在" });
+  
+      const title_slug = slugRow.title_slug;
+  
+      await new Promise((resolve, reject) => {
+        db.query(
+          `
+          INSERT INTO user_solved_questions 
+          (google_id, question_id, title_slug, solved_date, status, time_spent_minutes, encountered_in_interview, company)
+          VALUES (?, ?, ?, CURDATE(), 'AC', ?, ?, ?)
+          ON DUPLICATE KEY UPDATE 
+            status = 'AC',
+            solved_date = CURDATE(),
+            time_spent_minutes = VALUES(time_spent_minutes),
+            encountered_in_interview = VALUES(encountered_in_interview),
+            company = VALUES(company)
+        `,
+          [google_id, problem_id, title_slug, time_spent_minutes, encountered_in_interview, company],
+          (err) => {
+            if (err) reject(err);
+            else resolve();
+          }
+        );
+      });
+  
+      res.json({ message: "✅ 插入成功" });
+    } catch (err) {
+      console.error("❌ 插入错误", err);
+      res.status(500).json({ message: "数据库错误", error: err });
+    }
+  });
 
 module.exports = router;
