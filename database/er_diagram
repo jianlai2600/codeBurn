@@ -1,0 +1,68 @@
+digraph ER_Diagram {
+	rankdir=LR
+	User [label="User
+------------
+user_id (PK)
+username
+email
+password
+avatar_url
+created_at" fillcolor=lightblue shape=box style=filled]
+	Problem [label="Problem
+------------
+problem_id (PK)
+title
+difficulty
+url" fillcolor=lightblue shape=box style=filled]
+	Company [label="Company
+------------
+company_id (PK)
+company_name" fillcolor=lightblue shape=box style=filled]
+	Tag [label="Tag
+------------
+tag_id (PK)
+tag_name" fillcolor=lightblue shape=box style=filled]
+	Discussion [label="Discussion
+------------
+discussion_id (PK)
+user_id (FK)
+problem_id (FK)
+content
+created_at" fillcolor=lightblue shape=box style=filled]
+	Solves [label="Solves
+------------
+solve_id (PK)
+user_id (FK)
+problem_id (FK)
+solve_date
+attempts
+status" fillcolor=lightgray shape=diamond style=filled]
+	AppearsIn [label="AppearsIn
+------------
+problem_id (FK)
+company_id (FK)" fillcolor=lightgray shape=diamond style=filled]
+	HasTag [label="HasTag
+------------
+problem_id (FK)
+tag_id (FK)" fillcolor=lightgray shape=diamond style=filled]
+	Follows [label="Follows
+------------
+user_id (FK)
+problem_id (FK)" fillcolor=lightgray shape=diamond style=filled]
+	UserDiscussionLikes [label="UserDiscussionLikes
+------------
+user_id (FK)
+discussion_id (FK)" fillcolor=lightgray shape=diamond style=filled]
+	Solves -> User
+	Solves -> Problem
+	AppearsIn -> Problem
+	AppearsIn -> Company
+	HasTag -> Problem
+	HasTag -> Tag
+	Follows -> User
+	Follows -> Problem
+	UserDiscussionLikes -> User
+	UserDiscussionLikes -> Discussion
+	Discussion -> User
+	Discussion -> Problem
+}

@@ -15,6 +15,7 @@ const solvesRoutes = require("./routes/solvesRoutes");
 const appearsInRoutes = require("./routes/appearsInRoutes");
 const hasTagRoutes = require("./routes/hasTagRoutes");
 const statsRoutes = require("./routes/statsRoutes");
+const tokenRoutes = require("./routes/tokenRoutes");
 
 // ✅ 处理根路径 `/`，防止 404
 app.get("/", (req, res) => {
@@ -31,6 +32,7 @@ app.use("/api/discussions", discussionsRoutes);
 app.use("/api/solves", solvesRoutes);
 app.use("/api/appearsIn", appearsInRoutes);
 app.use("/api/hasTag", hasTagRoutes);
+app.use("/api/google-login", tokenRoutes);
 
 // ✅ 必须使用 Heroku 提供的 `PORT`
 const PORT = process.env.PORT || 3000;

@@ -14,7 +14,7 @@ function Home() {
                 <div className="flex justify-center space-x-6 mt-6">
                 <a href="/Stats" target="_blank" rel="noopener noreferrer" 
                 className="bg-white text-black px-6 py-3 rounded-lg text-lg shadow-md transition-all hover:bg-gray-200 hover:text-white">
-                    Get Started 🚀
+                    Database 📊
                 </a>
 
                 <a href="https://www.leetcode.com" target="_blank" rel="noopener noreferrer" 
@@ -22,6 +22,14 @@ function Home() {
                     Visit LeetCode 🌍
                 </a>
                 </div>
+
+                <div className="flex justify-center space-x-6 mt-6">
+                <a href="/Login" target="_blank" rel="noopener noreferrer" 
+                className="bg-white text-black px-6 py-3 rounded-lg text-lg shadow-md transition-all hover:bg-gray-200 hover:text-white">
+                    Start to record 🚀
+                </a>
+                </div>
+
                 <p className="text-sm opacity-90 mt-6">
                     ⚡ CodeBurn | LeetCode Tracker | 2024
                 </p>

@@ -132,4 +132,59 @@ router.put("/:solveId", (req, res) => {
     );
 });
 
+router.get("/recent/:google_id", (req, res) => {
+    const { google_id } = req.params;
+
+    const query = `
+        SELECT s.solve_id, s.problem_id, s.solve_date, s.status
+        FROM Solves s
+        JOIN Users u ON s.user_id = u.user_id
+        WHERE u.google_id = ?
+        ORDER BY s.solve_date DESC
+        LIMIT 10;
+    `;
+
+    db.query(query, [google_id], (err, results) => {
+        if (err) {
+            console.error("❌ 查询最近解题记录失败:", err);
+            return res.status(500).json({ error: "Failed to fetch solves" });
+        }
+        res.json(results);
+    });
+});
+
+// POST /api/solves/add-by-google-id
+router.post("/add-by-google-id", (req, res) => {
+    const { google_id, problem_id } = req.body;
+
+    if (!google_id || !problem_id) {
+        return res.status(400).json({ error: "Missing google_id or problem_id" });
+    }
+
+    // 先查出 user_id
+    const userQuery = "SELECT user_id FROM User WHERE user_id = ?";
+    db.query(userQuery, [google_id], (err, userResult) => {
+        if (err || userResult.length === 0) {
+            console.error("❌ 找不到用户:", err);
+            return res.status(404).json({ error: "User not found" });
+        }
+
+        const user_id = userResult[0].user_id;
+        const today = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
+
+        const insertQuery = `
+            INSERT INTO Solves (user_id, problem_id, solve_date, status)
+            VALUES (?, ?, ?, 'Accepted')`; // 默认 Accepted，也可以让前端选
+
+        db.query(insertQuery, [user_id, problem_id, today], (err2, result2) => {
+            if (err2) {
+                console.error("❌ 插入解题记录失败:", err2);
+                return res.status(500).json({ error: "Insert failed" });
+            }
+
+            res.json({ success: true, solve_id: result2.insertId });
+        });
+    });
+});
+
 module.exports = router;
