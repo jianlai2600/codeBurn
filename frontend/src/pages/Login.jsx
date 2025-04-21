@@ -35,7 +35,9 @@ function GoogleRedirectLoginPage() {
 
     const handleGoogleLogin = () => {
         const clientId = "33489629215-2lc7q8d3hek33j85ura2drsjpvt9h88o.apps.googleusercontent.com";
+        // const redirectUri = window.location.origin + "/Login"; // 确保你在 Google Console 配置过
         const redirectUri = "http://localhost:5173/Login"; // 确保你在 Google Console 配置过
+
         const scope = "openid profile email";
         const responseType = "token";
 
