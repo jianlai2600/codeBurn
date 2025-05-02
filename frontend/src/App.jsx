@@ -9,6 +9,7 @@ import Solves from "./pages/Solves";
 import Discussions from "./pages/Discussions";
 import Login from "./pages/Login";
 import Record from "./pages/Record";
+import CV from "./pages/CV";
 
 function App() {
     return (
@@ -25,6 +26,7 @@ function App() {
                         <Route path="/Discussions" element={<Discussions />} />
                         <Route path="/Login" element={<Login />} />
                         <Route path="/Record" element={<Record />} />
+                        <Route path="/CV" element={<CV />} />
                     </Routes>
                 </div>
                 <Footer />

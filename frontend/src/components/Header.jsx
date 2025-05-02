@@ -16,6 +16,11 @@ function Header() {
 
                 {/* 🔹 Navigation Bar */}
                 <div className="flex space-x-6 text-lg font-semibold">
+                    <NavItem
+                        to="/CV"
+                        label="About Me"
+                        className="bg-gradient-to-r from-yellow-400 via-orange-400 to-red-500 text-white font-extrabold text-shadow px-5 py-2 rounded-xl shadow-xl border-2 border-yellow-300 hover:scale-110 hover:-translate-y-0.5 hover:shadow-yellow-400/80 transition-all duration-300 ease-in-out"
+                    />
                     <NavItem to="/" label="Home" />
                     <NavItem to="/users" label="Users" />
                     <NavItem to="/problems" label="Problems" />
@@ -28,13 +33,18 @@ function Header() {
 }
 
 /** 🔹 Reusable Nav Item Component */
-const NavItem = ({ to, label }) => (
-    <Link 
-        to={to} 
-        className="px-4 py-2 rounded-lg transition-all duration-300 text-gray-700 hover:text-white hover:bg-red-500 hover:scale-105 active:scale-95 active:text-gray-100"
-    >
+const NavItem = ({ to, label, className = "" }) => {
+    const baseClass =
+      "px-4 py-2 rounded-lg transition-all duration-300 text-gray-700 hover:text-white hover:bg-red-500 hover:scale-105 active:scale-95 active:text-gray-100";
+  
+    return (
+      <Link
+        to={to}
+        className={`${baseClass} ${className}`}
+      >
         {label}
-    </Link>
-);
+      </Link>
+    );
+  };
 
 export default Header;
